@@ -636,8 +636,6 @@ String timePointSecToDate(int sec) {
     String s =  DateTime.fromMillisecondsSinceEpoch(sec * 1000).toIso8601String();
     print("DATE : ");
     print(s);
-    var t = s.substring(0, s.length - 1);
-    print(t);
     return s;
 }
 
@@ -937,7 +935,7 @@ Map<String, Type> createInitialTypes() {
         "uint64": createType(
             name: 'uint64',
             serialize:(Type self,SerialBuffer buffer ,Object data,{SerializerState state,bool allowExtensions}) { 
-                buffer.pushArray(numeric.decimalToBinary(8, '' + data));
+                buffer.pushArray(numeric.decimalToBinary(8, '' + data.toString()));
             },
             deserialize:(Type self,SerialBuffer buffer,{SerializerState state,bool allowExtensions}) { 
               return numeric.binaryToDecimal(buffer.getUint8List(8)); 
@@ -946,7 +944,7 @@ Map<String, Type> createInitialTypes() {
         "int64": createType(
             name: 'int64',
             serialize:(Type self,SerialBuffer buffer ,Object data,{SerializerState state,bool allowExtensions}) { 
-                buffer.pushArray(numeric.signedDecimalToBinary(8, '' + data));
+                buffer.pushArray(numeric.signedDecimalToBinary(8, '' + data.toString()));
             },
             deserialize:(Type self,SerialBuffer buffer,{SerializerState state,bool allowExtensions}) { 
               return numeric.signedBinaryToDecimal(buffer.getUint8List(8)); 
@@ -1230,6 +1228,8 @@ dynamic getTypesFromAbi(Map<String, Type> initialTypes ,Abi abi) {
 
 /// TAPoS: Return transaction fields which reference `refBlock` and expire `expireSeconds` after `refBlock.timestamp` */
 dynamic transactionHeader(BlockTaposInfo refBlock,int expireSeconds) {
+  print("REFBLOCK TIMESTAMP:");
+  print(refBlock.timestamp);
     var t = {
         "expiration": timePointSecToDate(dateToTimePointSec(refBlock.timestamp) + expireSeconds),
         "ref_block_num": refBlock.block_num & 0xffff,
